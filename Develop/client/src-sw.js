@@ -24,7 +24,20 @@ warmStrategyCache({
   strategy: pageCache,
 });
 
-registerRoute(({ request }) => request.mode === 'navigate', pageCache);
+registerRoute(
+  ({ request }) => request.mode === 'navigate', pageCache,
+  // TODO: Implement asset caching
+  new cacheWhile({
+    cacheName: 'asset-cache',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200],
+      }),
+    ],
+  })
+);
 
-// TODO: Implement asset caching
+offlineFallback({ 
+  request: '/index.html' });
+
 registerRoute();
